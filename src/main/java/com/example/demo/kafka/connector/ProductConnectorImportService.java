@@ -17,7 +17,7 @@ import org.springframework.util.StringUtils;
 public class ProductConnectorImportService {
 
     private final ProjectApiRoot commerceToolsClient;
-    private static final String DEFAULT_PRODUCT_TYPE = "b6d33381-41e3-4ccf-84c3-02ee8ed4d9f1";
+    private static final String DEFAULT_PRODUCT_TYPE = "furniture-and-decor";
 
     public void importProduct(PimProduct pimProduct) {
         try {
