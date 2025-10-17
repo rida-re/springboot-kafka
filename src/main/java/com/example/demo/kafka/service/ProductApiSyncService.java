@@ -10,8 +10,8 @@ import com.commercetools.sync.products.ProductSync;
 import com.commercetools.sync.products.ProductSyncOptions;
 import com.commercetools.sync.products.ProductSyncOptionsBuilder;
 import com.example.demo.dto.ProductRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -20,15 +20,14 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
-public class ProductSyncService {
-
-    private static final Logger logger = LoggerFactory.getLogger(ProductSyncService.class);
+public class ProductApiSyncService {
 
     private final ProjectApiRoot client;
     private final ProductSync productSync;
 
-    public ProductSyncService(ProjectApiRoot client) {
+    public ProductApiSyncService(ProjectApiRoot client) {
         this.client = client;
         this.productSync = new ProductSync(createSyncOptions());
     }
@@ -37,9 +36,9 @@ public class ProductSyncService {
         // Note: errorCallback and warningCallback have multiple parameters; ignore the ones we don't use.
         return ProductSyncOptionsBuilder.of(client)
                                         .errorCallback((exception, oldResource, newResource, updateActions) ->
-                                                logger.error("Error when syncing product.", exception))
+                                                log.error("Error when syncing product.", exception))
                                         .warningCallback((warning, oldResource, newResource) ->
-                                                logger.warn("Warning when syncing product: {}", warning.getMessage()))
+                                                log.warn("Warning when syncing product: {}", warning.getMessage()))
                                         .build();
     }
 
@@ -49,19 +48,20 @@ public class ProductSyncService {
         productSync.sync(Collections.singletonList(productDraft))
                    .whenComplete((result, throwable) -> {
                        if (throwable != null) {
-                           logger.error("Product sync failed with exception.", throwable);
+                           log.error("Product sync failed with exception.", throwable);
                            return;
                        }
                        if (result == null) {
-                           logger.error("Product sync returned null result.");
+                           log.error("Product sync returned null result.");
                            return;
                        }
-                       /*if (result.getFailed().get()) {
-                           logger.error("Product sync has failures: {}", result.getReportMessage());
+                       if (result.getFailed()
+                                 .get() > 0) {
+                           log.error("Product sync has failures: {}", result.getReportMessage());
                        } else {
-                           logger.info("Product sync completed successfully: {}", result.getReportMessage());
-                       } */
-                       logger.info("Product sync completed successfully: {}", result.getReportMessage());
+                           log.info("Product sync completed successfully: {}", result.getReportMessage());
+                       }
+                       log.info("Product sync completed successfully: {}", result.getReportMessage());
 
                    });
     }
@@ -95,7 +95,7 @@ public class ProductSyncService {
         return ProductVariantDraftBuilder.of()
                                          .key(productData.getKey())
                                          .sku(productData.getSku() != null ? productData.getSku() : productData.getKey())
-                                         .prices(createPrices(productData.getPrice()))
+                                         //.prices(createPrices(productData.getPrice()))
                                          .images(createImages(productData.getImage()))
                                          .attributes(createAttributes(productData.getAttributes()))
                                          .build();
@@ -122,25 +122,27 @@ public class ProductSyncService {
                      .url(imageInfo.getUrl())
                      .label(imageInfo.getLabel())
                      .dimensions(ImageDimensionsBuilder.of()
-                                                       .w(imageInfo.getDimensions().getW())
-                                                       .h(imageInfo.getDimensions().getH())
+                                                       .w(imageInfo.getDimensions()
+                                                                   .getW())
+                                                       .h(imageInfo.getDimensions()
+                                                                   .getH())
                                                        .build())
                      .build()
         );
     }
 
-private List<Attribute> createAttributes(Map<String, Object> attributes) {
-    if (attributes == null) return Collections.emptyList();
-    return attributes.entrySet()
-                    .stream()
-                    .map(entry -> {
-                        Object value = entry.getValue();
-                        return AttributeBuilder.of()
-                                .name(entry.getKey())
-                                .value(value)
-                                .build();
-                    })
-                    .collect(Collectors.toList());
-}
+    private List<Attribute> createAttributes(Map<String, Object> attributes) {
+        if (attributes == null) return Collections.emptyList();
+        return attributes.entrySet()
+                         .stream()
+                         .map(entry -> {
+                             Object value = entry.getValue();
+                             return AttributeBuilder.of()
+                                                    .name(entry.getKey())
+                                                    .value(value)
+                                                    .build();
+                         })
+                         .collect(Collectors.toList());
+    }
 }
 

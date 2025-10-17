@@ -1,32 +1,32 @@
 package com.example.demo.kafka.service;
 
 import com.commercetools.importapi.client.ProjectApiRoot;
-import com.commercetools.importapi.models.common.*;
+import com.commercetools.importapi.models.common.AssetDimensionsBuilder;
+import com.commercetools.importapi.models.common.ImageBuilder;
+import com.commercetools.importapi.models.common.LocalizedStringBuilder;
+import com.commercetools.importapi.models.common.ProductTypeKeyReferenceBuilder;
 import com.commercetools.importapi.models.importcontainers.ImportContainerDraftBuilder;
 import com.commercetools.importapi.models.importrequests.ProductDraftImportRequestBuilder;
-import com.commercetools.importapi.models.productdrafts.PriceDraftImportBuilder;
 import com.commercetools.importapi.models.productdrafts.ProductDraftImport;
 import com.commercetools.importapi.models.productdrafts.ProductDraftImportBuilder;
 import com.commercetools.importapi.models.productdrafts.ProductVariantDraftImportBuilder;
 import com.example.demo.dto.ProductRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.Locale;
 
+@Slf4j
 @Service
-public class ProductImportService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProductImportService.class);
+@RequiredArgsConstructor
+public class ProductApiImportService {
+
     private final ProjectApiRoot importApiClient;
 
-    public ProductImportService(ProjectApiRoot importApiClient) {
-        this.importApiClient = importApiClient;
-    }
-
     public void importProduct(ProductRequest productData) {
-        LOGGER.info("Starting product import for key: {}", productData.getKey());
+        log.info("Starting product import for key: {}", productData.getKey());
 
         // Create import container if not exists
         String containerKey = "products-" + System.currentTimeMillis();
@@ -45,10 +45,10 @@ public class ProductImportService {
                                                                .build()
                        )
                        .execute()
-                       .thenAccept(response -> LOGGER.info("Product import initiated: {}", response.getBody()
-                                                                                                   .getOperationStatus()))
+                       .thenAccept(response -> log.info("Product import initiated: {}", response.getBody()
+                                                                                                .getOperationStatus()))
                        .exceptionally(throwable -> {
-                           LOGGER.error("Failed to import product: {}", throwable.getMessage());
+                           log.error("Failed to import product: {}", throwable.getMessage());
                            return null;
                        });
 
@@ -63,10 +63,10 @@ public class ProductImportService {
                                                    .build()
                 )
                 .execute()
-                .thenAccept(container -> LOGGER.info("Created import container: {}", container.getBody()
-                                                                                              .getKey()))
+                .thenAccept(container -> log.info("Created import container: {}", container.getBody()
+                                                                                           .getKey()))
                 .exceptionally(throwable -> {
-                    LOGGER.error("Failed to create import container: {}", throwable.getMessage());
+                    log.error("Failed to create import container: {}", throwable.getMessage());
                     return null;
                 });
     }
@@ -92,19 +92,19 @@ public class ProductImportService {
                                                 ProductVariantDraftImportBuilder.of()
                                                                                 .sku(productData.getSku())
                                                                                 .key(productData.getKey())
-                                                                                .prices(Collections.singletonList(
-                                                                                        PriceDraftImportBuilder.of()
-                                                                                                               .key("price-" + System.currentTimeMillis())
-                                                                                                               .value(
-                                                                                                                       MoneyBuilder.of()
-                                                                                                                                   .centAmount(productData.getPrice()
-                                                                                                                                                          .getCentAmount())
-                                                                                                                                   .currencyCode(productData.getPrice()
-                                                                                                                                                            .getCurrencyCode())
-                                                                                                                                   .build()
-                                                                                                               )
-                                                                                                               .build()
-                                                                                ))
+                                                                                /* .prices(Collections.singletonList(
+                                                                                         PriceDraftImportBuilder.of()
+                                                                                                                .key("price-" + System.currentTimeMillis())
+                                                                                                                .value(
+                                                                                                                        MoneyBuilder.of()
+                                                                                                                                    .centAmount(productData.getPrice()
+                                                                                                                                                           .getCentAmount())
+                                                                                                                                    .currencyCode(productData.getPrice()
+                                                                                                                                                             .getCurrencyCode())
+                                                                                                                                    .build()
+                                                                                                                )
+                                                                                                                .build()
+                                                                                 )) */
                                                                                 .images(Collections.singletonList(
                                                                                         ImageBuilder.of()
                                                                                                     .url(productData.getImage()

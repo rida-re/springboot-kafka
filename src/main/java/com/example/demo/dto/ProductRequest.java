@@ -18,7 +18,7 @@ public class ProductRequest {
     private String sku;
     private String productTypeId;
     private List<String> categoryIds;
-    private PriceInfo price;
+    //private PriceInfo price;
     private ImageInfo image;
     private Map<String, Object> attributes;
     
