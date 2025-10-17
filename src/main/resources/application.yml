@@ -1,0 +1,34 @@
+server:
+  port: 8081
+management:
+  endpoints:
+    web:
+      exposure:
+        include: 'health,info,metrics,prometheus'
+spring:
+  application:
+    name: springboot-kafka
+  kafka:
+    bootstrap-servers: 'localhost:9092'
+    consumer:
+      group-id: service-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+        spring.json.value.default.type: com.example.demo.dto.PimProduct
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    topics:
+      product-topic: product_events
+      order-topic: order_events
+      products: pim-products
+  connect:
+    url: 'http://localhost:8083'
+commercetools:
+  projectKey: 'my-project-key4'
+  clientId: 'xeiKwt-RVqnQ2U5lvLdj1Zy4'
+  clientSecret: '3kGs27Dgd-UISKcFhhNxdOSAoCQLOLSG'
+  scopes: 'manage_project:my-project-key4 manage_products:my-project-key4 view_products:my-project-key4 import_products:my-project-key4'
