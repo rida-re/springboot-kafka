@@ -10,7 +10,6 @@ import com.commercetools.sync.products.ProductSync;
 import com.commercetools.sync.products.ProductSyncOptions;
 import com.commercetools.sync.products.ProductSyncOptionsBuilder;
 import com.example.demo.dto.ProductRequest;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +32,6 @@ public class ProductApiSyncService {
     }
 
     private ProductSyncOptions createSyncOptions() {
-        // Note: errorCallback and warningCallback have multiple parameters; ignore the ones we don't use.
         return ProductSyncOptionsBuilder.of(client)
                                         .errorCallback((exception, oldResource, newResource, updateActions) ->
                                                 log.error("Error when syncing product.", exception))
@@ -71,7 +69,7 @@ public class ProductApiSyncService {
                                   .key(productData.getKey())
                                   .name(LocalizedString.of(Locale.ENGLISH, productData.getName()))
                                   .productType(ProductTypeResourceIdentifierBuilder.of()
-                                                                                   .id(productData.getProductTypeId())
+                                                                                   .key(productData.getProductTypeId())
                                                                                    .build())
                                   .slug(LocalizedString.of(Locale.ENGLISH, productData.getSlug() != null ?
                                           productData.getSlug() : productData.getKey()))

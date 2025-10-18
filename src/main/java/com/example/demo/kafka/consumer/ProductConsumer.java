@@ -20,7 +20,7 @@ public class ProductConsumer {
     private final ProductApiImportService productApiImportService;
     private final ProductApiClientService productApiClientService;
 
-  /*  @KafkaListener(
+    @KafkaListener(
             topics = "${spring.kafka.topics.product-topic}",
             groupId = "${spring.kafka.consumer.group-id}"
     )
@@ -41,9 +41,9 @@ public class ProductConsumer {
             }
         }
     }
-    */
+
   
-    @KafkaListener(
+   /* @KafkaListener(
             topics = "${spring.kafka.topics.products}",
             groupId = "${spring.kafka.consumer.group-id}",
             containerFactory = "kafkaListenerContainerFactory"
@@ -68,5 +68,5 @@ public class ProductConsumer {
         } catch (Exception e) {
             log.error("Error processing message: {}", e.getMessage(), e);
         }
-    }
+    } */
 }
