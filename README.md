@@ -6,7 +6,7 @@ It connects a PostgreSQL source, publishes data changes to Kafka topics, and syn
 
 ## Prerequisites
 
-1. Java 17 or later
+1. Java 18 or later
 2. Apache Kafka installed locally
 3. PostgreSQL database
 4. CommerceTools project credentials (projectKey, clientId, clientSecret)
@@ -23,7 +23,7 @@ It connects a PostgreSQL source, publishes data changes to Kafka topics, and syn
 ### Start Kafka Server
 ```cmd
 cd C:\kafka\bin\windows
-kafka-storage.bat format -t cff643b2-7f4c-457d-961d-26ff42fdb432 -c ..\..\config\server.properties
+kafka-storage.bat format -t 4f0ebb0a-13b4-4c71-a35d-dfe6da9e464f -c ..\..\config\server.properties
 kafka-server-start.bat ..\..\config\server.properties
 ```
 
